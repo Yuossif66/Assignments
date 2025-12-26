@@ -1,1 +1,268 @@
+package assignment_1;
 
+import java.util.Random;
+
+public class Assignment1_Even {
+
+    // تعريف العقدة للقائمة الأحادية والدائرية
+    // Node class for Singly and Circular Linked Lists
+    static class Node {
+        int data;
+        Node next;
+        Node(int data) {
+            this.data = data;
+            this.next = null;
+        }
+    }
+
+    // تعريف العقدة للقائمة المزدوجة
+    // Node class for Doubly Linked List
+    static class DoublyNode {
+        int data;
+        DoublyNode next;
+        DoublyNode prev;
+        DoublyNode(int data) {
+            this.data = data;
+            this.next = null;
+            this.prev = null;
+        }
+    }
+
+    // ==========================================================
+    // حلول الأسئلة الزوجية (Even Questions)
+    // ==========================================================
+
+    // Question 2: Write a program in Java to remove a random element from an array
+    // السؤال الثاني: حذف عنصر عشوائي من المصفوفة
+    public static int[] removeRandomElement(int[] array) {
+        if (array == null || array.length == 0) return array;
+
+        Random rand = new Random();
+        int indexToRemove = rand.nextInt(array.length); // اختيار موقع عشوائي
+
+        System.out.println("Random element to remove: " + array[indexToRemove]);
+
+        int[] newArray = new int[array.length - 1];
+        int k = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (i == indexToRemove) continue; // تخطي العنصر المحذوف
+            newArray[k++] = array[i];
+        }
+        return newArray;
+    }
+
+    // Question 4: Write a Java program to reverse an array
+    // السؤال الرابع: عكس عناصر المصفوفة
+    public static void reverseArray(int[] array) {
+        int start = 0;
+        int end = array.length - 1;
+        while (start < end) {
+            // تبديل الأول مع الأخير
+            int temp = array[start];
+            array[start] = array[end];
+            array[end] = temp;
+            start++;
+            end--;
+        }
+    }
+
+    // Question 6: Rotate a linked list to the right by k places
+    // السؤال السادس: تدوير القائمة المترابطة
+    public static Node rotateRight(Node head, int k) {
+        if (head == null || head.next == null || k == 0) return head;
+
+        // حساب طول القائمة
+        Node current = head;
+        int length = 1;
+        while (current.next != null) {
+            current = current.next;
+            length++;
+        }
+
+        current.next = head; // تحويلها لدائرية مؤقتاً
+        k = k % length;
+        int steps = length - k; // عدد الخطوات للوصول للذيل الجديد
+
+        Node newTail = head;
+        for (int i = 1; i < steps; i++) {
+            newTail = newTail.next;
+        }
+
+        Node newHead = newTail.next;
+        newTail.next = null; // كسر الدائرة
+        return newHead;
+    }
+
+    // Question 8: Find index of a given data value (return -1 if not found)
+    // السؤال الثامن: البحث عن موقع العنصر وإرجاع الفهرس
+    public static int findIndex(Node head, int value) {
+        int index = 0;
+        Node current = head;
+        while (current != null) {
+            if (current.data == value) return index;
+            current = current.next;
+            index++;
+        }
+        return -1; // غير موجود
+    }
+
+    // Question 10: Remove duplicates from Doubly Linked List
+    // السؤال العاشر: حذف التكرار من القائمة المزدوجة
+    public static void removeDuplicates(DoublyNode head) {
+        DoublyNode current = head;
+        while (current != null) {
+            DoublyNode temp = current.next;
+            while (temp != null) {
+                if (current.data == temp.data) {
+                    // حذف العقدة temp
+                    DoublyNode duplicate = temp;
+                    if (duplicate.prev != null) duplicate.prev.next = duplicate.next;
+                    if (duplicate.next != null) duplicate.next.prev = duplicate.prev;
+                    temp = temp.next; // الانتقال للتالي
+                } else {
+                    temp = temp.next;
+                }
+            }
+            current = current.next;
+        }
+    }
+
+    // Question 12: Search for an element in a Doubly Linked List
+    // السؤال الثاني عشر: البحث في القائمة المزدوجة
+    public static boolean searchDoubly(DoublyNode head, int value) {
+        DoublyNode current = head;
+        while (current != null) {
+            if (current.data == value) return true;
+            current = current.next;
+        }
+        return false;
+    }
+
+    // Question 14: Delete a node from a specific position in Circular Linked List
+    // السؤال الرابع عشر: حذف عقدة من موقع محدد في قائمة دائرية
+    public static Node deleteNodeCircular(Node head, int position) {
+        if (head == null) return null;
+        
+        Node current = head;
+        Node prev = null;
+
+        // حذف الرأس (موقع 0)
+        if (position == 0) {
+            Node tail = head;
+            while (tail.next != head) {
+                tail = tail.next;
+            }
+            if (head == tail) return null; // عنصر واحد فقط
+            
+            tail.next = head.next;
+            head = head.next;
+            return head;
+        }
+
+        // الوصول للموقع
+        for (int i = 0; i < position; i++) {
+            prev = current;
+            current = current.next;
+            if (current == head) return head; // الموقع خارج النطاق
+        }
+        
+        prev.next = current.next; // تجاوز العقدة المحذوفة
+        return head;
+    }
+
+    // Question 16: Split a circular linked list into two halves
+    // السؤال السادس عشر: تقسيم القائمة الدائرية لنصفين
+    public static void splitCircularList(Node head) {
+        if (head == null) return;
+
+        Node slow = head;
+        Node fast = head;
+
+        // استخدام مؤشرين لتحديد المنتصف
+        while (fast.next != head && fast.next.next != head) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // slow الآن عند المنتصف
+        Node head1 = head;
+        Node head2 = slow.next;
+
+        slow.next = head1; // إغلاق الدائرة الأولى
+
+        Node curr = head2;
+        while (curr.next != head) {
+            curr = curr.next;
+        }
+        curr.next = head2; // إغلاق الدائرة الثانية
+
+        System.out.println("List split successfully.");
+        System.out.println("Head 1 Data: " + head1.data);
+        System.out.println("Head 2 Data: " + head2.data);
+    }
+
+    // ==========================================================
+    // Main Method to Run and Test Code
+    // دالة التشغيل الرئيسية
+    // ==========================================================
+    public static void main(String[] args) {
+        System.out.println("--- Assignment 1: Data Structures ---");
+        System.out.println("Student: Rakan Alhitar");
+        System.out.println("-------------------------------------");
+
+        // Test Q2
+        System.out.println("\n[Q2] Remove Random Element:");
+        int[] arr = {10, 20, 30, 40, 50};
+        int[] newArr = removeRandomElement(arr);
+        System.out.print("Result Array: ");
+        for (int n : newArr) System.out.print(n + " ");
+        System.out.println();
+
+        // Test Q4
+        System.out.println("\n[Q4] Reverse Array:");
+        int[] revArr = {1, 2, 3, 4, 5};
+        reverseArray(revArr);
+        for (int n : revArr) System.out.print(n + " ");
+        System.out.println();
+
+        // Test Q6
+        System.out.println("\n[Q6] Rotate Linked List (k=2):");
+        Node list = new Node(1);
+        list.next = new Node(2);
+        list.next.next = new Node(3);
+        list.next.next.next = new Node(4);
+        list.next.next.next.next = new Node(5);
+        list = rotateRight(list, 2);
+        Node temp = list;
+        while(temp != null) { System.out.print(temp.data + " "); temp = temp.next; }
+        System.out.println();
+
+        // Test Q8
+        System.out.println("\n[Q8] Find Index of value 3:");
+        System.out.println("Index: " + findIndex(list, 3));
+
+        // Test Q10
+        System.out.println("\n[Q10] Remove Duplicates (Doubly):");
+        DoublyNode dList = new DoublyNode(10);
+        dList.next = new DoublyNode(20); dList.next.prev = dList;
+        dList.next.next = new DoublyNode(20); dList.next.next.prev = dList.next;
+        dList.next.next.next = new DoublyNode(30); dList.next.next.next.prev = dList.next.next;
+        removeDuplicates(dList);
+        DoublyNode tempD = dList;
+        while(tempD != null) { System.out.print(tempD.data + " "); tempD = tempD.next; }
+        System.out.println();
+
+        // Test Q12
+        System.out.println("\n[Q12] Search Doubly (Value 30):");
+        System.out.println("Found: " + searchDoubly(dList, 30));
+
+        // Test Q16 (Simple Split Test)
+        System.out.println("\n[Q16] Split Circular List:");
+        Node circle = new Node(1);
+        circle.next = new Node(2);
+        circle.next.next = new Node(3);
+        circle.next.next.next = new Node(4);
+        circle.next.next.next.next = circle; // Make it circular
+        splitCircularList(circle);
+    }
+}
